@@ -1,10 +1,19 @@
 var express = require('express');
-var router = express.Router();
+var request = require('request');
+var mongoHelper = require('../app/mongo_helper');
+var registerRouter = express.Router();
 
 /* GET Register Page */
 
-router.get('/', function (req, res, next) {
+registerRouter.get('/', function (req, res, next) {
     res.render('register');
 });
 
-module.exports = router;
+
+registerRouter.route("/submit")
+    .post(function (req, res) {
+
+    });
+
+
+module.exports = registerRouter;

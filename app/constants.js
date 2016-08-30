@@ -11,7 +11,7 @@ cons.dbUrl = {
 
 
 cons.PORT = 27017;
-cons.host = localhost;
+cons.host = "localhost";
 cons.auth = false;
 
 module.exports = cons;

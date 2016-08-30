@@ -8,16 +8,16 @@ var dbClient = {};
 dbClient[props.BINGO_USER] = {url : props.getDBUrl(props.BINGO_USER)};
 
 mongo_client.getDB = function(cb, dbName){
-    if(dbName == Null){
+    if(dbName == null){
         dbName = props.BINGO_USER;
     }
     var reqDB = dbName;
     var dbUrl = dbClient[reqDB].url;
     mongoClient.connect(dbUrl, function(err, db){
         if(err){
-            logger.error('Failed to connect to %s, %s', dbUrl, err, {});
+            console.error('Failed to connect to %s, %s', dbUrl, err, {});
         }else{
-            logger.info('Mongo Client connected to: ' + dbUrl);
+            console.log('Mongo Client connected to: ' + dbUrl);
             cb(db);
         }
     });

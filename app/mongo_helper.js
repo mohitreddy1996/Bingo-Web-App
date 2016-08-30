@@ -1,4 +1,4 @@
-var mongoClient = require('./mongo_client');
+var mongoClient = require('./mongoClient');
 var props = require('./properties');
 var cons = require('./constants');
 
@@ -31,3 +31,5 @@ mongo_helper.updateScore = function (dbName, collName, userId, matches, wins, up
 
     mongoClient.updateInDB(dbName, collName, mongoQueryObj,mongoUpdateObj, upsert, callbackFn);
 };
+
+module.exports = mongo_helper;

@@ -33,8 +33,14 @@ registerRouter.post("/submit", function (req, res) {
                 mongoHelper.addUser(props.BINGO_USER, props.USERS, name, userId, password, function (err, dbRes) {
                     if(err){
                         res.status(500).json("Error while saving data into database. Error : " + err);
-                    } else{
-                        res.status(200).json("Saved!");
+                    } else {
+                        mongoHelper.addScore(props.BINGO_USER, props.SCORE, userId, 0, 0, function (err, dbResults) {
+                            if (err) {
+                                res.status(500).json("Error while saving data into database. Error : " + err);
+                            } else {
+                                res.status(200).json("Saved!");
+                            }
+                        });
                     }
                 });
             }

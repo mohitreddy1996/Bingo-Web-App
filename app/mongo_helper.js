@@ -32,4 +32,23 @@ mongo_helper.updateScore = function (dbName, collName, userId, matches, wins, up
     mongoClient.updateInDB(dbName, collName, mongoQueryObj,mongoUpdateObj, upsert, callbackFn);
 };
 
+
+mongo_helper.addScore = function (dbName, collName, userId, matches, wins, callback) {
+    var mongoObj = {};
+    mongoObj._id = userId;
+    mongoObj.userId = userId;
+    mongoObj.matches = matches;
+    mongoObj.wins = wins;
+
+    mongoClient.insertInDB(dbName, collName, mongoObj, callback);
+};
+
+mongo_helper.getUserScore = function(dbName, collName, userId, callback) {
+    var mongoObj = {};
+    mongoObj._id = userId;
+
+    mongoClient.findInDB(dbName, collName, mongoObj, 0, 100, callback);
+
+};
+
 module.exports = mongo_helper;

@@ -10,29 +10,22 @@
     <body>
         <h2 align="center">Home!</h2>
         <div class="row">
-            <div class="col-sm-3">User Name : <%= name %></div>
-            <div class="col-sm-3">Matches : <%= matches %></div>
-            <div class="col-sm-3">Wins : <%= wins %></div>
+            <div class="col-sm-4">User Name : <%= name %></div>
+            <div class="col-sm-4">Matches : <%= matches %></div>
+            <div class="col-sm-4">Wins : <%= wins %></div>
         </div>
-
+        <br />
+        <h3 align="center"> Play Bingo!</h3>
         <div class="row">
-            <div class="col-sm-2">
-                <div class="form_bg">
+            <div class="col-lg-3">
                     <form action="/comp_challenge" method="get">
-                        <div class="align-center">
                             <button type="submit" class="btn btn-default" id="submit">v/s Computer</button>
-                        </div>
                     </form>
-                </div>
             </div>
-            <div class="col-sm-2">
-                <div class="form_bg">
+            <div class="col-lg-3">
                     <form action="/challenge" method="get">
-                        <div class="align-center">
                             <button type="submit" class="btn btn-default" id="submit">v/s User</button>
-                        </div>
                     </form>
-                </div>
             </div>
         </div>
 

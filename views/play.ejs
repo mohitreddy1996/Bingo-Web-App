@@ -3,10 +3,76 @@
         <link rel="stylesheet" type="text/css" href="stylesheets/style.css">
         <link rel="stylesheet" type="text/css" href="stylesheets/login.css">
         <link rel="stylesheet" href="/css/bootstrap.min.css">
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
         <script src="/js/jquery.min.js"></script>
         <script src="/js/bootstrap.min.js"></script>
 
         <script type="text/javascript">
+            var already_checked_elements = [];
+            var x,y;
+            function disable_element(Id) {
+                //document.getElementById(Id).checked = true;
+                document.getElementById(Id).disabled = true;
+            }
+            function init_X_Y(Id) {
+                var value = Id.substring(Id.indexOf("e")+1, Id.length);
+                value = parseInt(value);
+                x = (value-1)/5 + 1;
+                y = (value-1)%5 + 1;
+            }
+            function get_checked_elements() {
+                 var flag = 1;
+                 var elems = document.getElementsByName("bingo");
+                 for(var i=0; i<elems.length; i++){
+                     if(elems[i].checked){
+                         if(already_checked_elements.indexOf(elems[i]) === -1){
+                             var Id = elems[i].id;
+                             init_X_Y(Id);
+                             disable_element(Id);
+                             already_checked_elements.add(elems[i]);
+                             flag=0;
+                         }
+                     }
+                 }
+                 if(flag === 1){
+                     check_error();
+                 }
+            }
+
+            function check_error() {
+                 window.alert("Not Allowed Try again!");
+            }
+
+            $(function(){
+                $('#submit').on('click', function () {
+                    //get_checked_elements();
+                    var id;
+                    var flag = 0;
+                    var elems = document.getElementsByName("bingo");
+                    for(var i=0; i<elems.length; i++){
+                        if(elems[i].checked && elems[i].disabled == false){
+                            id = elems[i].id;
+                            flag=1
+                            break;
+                        }
+                    }
+                    if(flag === 0){
+                        check_error();
+                        return;
+                    }
+                    document.getElementById(id).disabled = true;
+                    document.getElementById(id).style.outline = "red";
+                    document.getElementById(id).className = "is_checked";
+                    var value = id.substring(id.indexOf("e")+1, id.length);
+                    value = parseInt(value);
+                    x = parseInt((value-1)/5) + 1;
+                    y = (value-1)%5 + 1;
+                    var parameters = {xCoOrd: x, yCoOrd: y};
+                    $.get('/play/score/', parameters, function (data) {
+                        $('#results').html(data);
+                    });
+                });
+            });
 
         </script>
     </head>
@@ -19,124 +85,125 @@
             <form>
                 <div class="row">
                     <div class="col-md-1">
-                            <input id="value1" type="radio" class="form-control" name="bingo">
+                            <input id="value1" type="radio" class="form-control" name="bingo" class="not_checked">
                             <label for="value1"><%= value1 %></label>
                     </div>
                     <div class="col-md-1">
-                            <input id="value2" type="radio" class="form-control" name="bingo">
+                            <input id="value2" type="radio" class="form-control" name="bingo" class="not_checked">
                             <label for="value2"><%= value2 %></label>
                     </div>
                     <div class="col-md-1">
-                            <input id="value3" type="radio" class="form-control" name="bingo">
+                            <input id="value3" type="radio" class="form-control" name="bingo" class="not_checked">
                             <label for="value3"><%= value3 %></label>
                     </div>
                     <div class="col-md-1">
-                            <input id="value4" type="radio" class="form-control" name="bingo">
+                            <input id="value4" type="radio" class="form-control" name="bingo" class="not_checked">
                             <label for="value4"><%= value4 %></label>
                     </div>
                     <div class="col-md-1">
-                            <input id="value5" type="radio" class="form-control" name="bingo">
+                            <input id="value5" type="radio" class="form-control" name="bingo" class="not_checked">
                             <label for="value5"><%= value5 %></label>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-md-1">
-                            <input id="value6" type="radio" class="form-control" name="bingo">
+                            <input id="value6" type="radio" class="form-control" name="bingo" class="not_checked">
                             <label for="value6"><%= value6 %></label>
                     </div>
                     <div class="col-md-1">
-                            <input id="value7" type="radio" class="form-control" name="bingo">
+                            <input id="value7" type="radio" class="form-control" name="bingo" class="not_checked">
                             <label for="value7"><%= value7 %></label>
                     </div>
                     <div class="col-md-1">
-                            <input id="value8" type="radio" class="form-control" name="bingo">
+                            <input id="value8" type="radio" class="form-control" name="bingo" class="not_checked">
                             <label for="value8"><%= value8 %></label>
                     </div>
                     <div class="col-md-1">
-                            <input id="value9" type="radio" class="form-control" name="bingo">
+                            <input id="value9" type="radio" class="form-control" name="bingo" class="not_checked">
                             <label for="value9"><%= value9 %></label>
                     </div>
                     <div class="col-md-1">
-                            <input id="value10" type="radio" class="form-control" name="bingo">
+                            <input id="value10" type="radio" class="form-control" name="bingo" class="not_checked">
                             <label for="value10"><%= value10 %></label>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-md-1">
-                            <input id="value11" type="radio" class="form-control" name="bingo">
+                            <input id="value11" type="radio" class="form-control" name="bingo" class="not_checked">
                             <label for="value11"><%= value11 %></label>
                     </div>
                     <div class="col-md-1">
-                            <input id="value12" type="radio" class="form-control" name="bingo">
+                            <input id="value12" type="radio" class="form-control" name="bingo" class="not_checked">
                             <label for="value12"><%= value12 %></label>
                     </div>
                     <div class="col-md-1">
-                            <input id="value13" type="radio" class="form-control" name="bingo">
+                            <input id="value13" type="radio" class="form-control" name="bingo" class="not_checked">
                             <label for="value13"><%= value13 %></label>
                     </div>
                     <div class="col-md-1">
-                            <input id="value14" type="radio" class="form-control" name="bingo">
+                            <input id="value14" type="radio" class="form-control" name="bingo" class="not_checked">
                             <label for="value14"><%= value14 %></label>
                     </div>
                     <div class="col-md-1">
-                            <input id="value15" type="radio" class="form-control" name="bingo">
+                            <input id="value15" type="radio" class="form-control" name="bingo" class="not_checked">
                             <label for="value15"><%= value15 %></label>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-md-1">
-                            <input id="value16" type="radio" class="form-control" name="bingo">
+                            <input id="value16" type="radio" class="form-control" name="bingo" class="not_checked">
                             <label for="value16"><%= value16 %></label>
                     </div>
                     <div class="col-md-1">
-                            <input id="value17" type="radio" class="form-control" name="bingo" >
+                            <input id="value17" type="radio" class="form-control" name="bingo" class="not_checked" >
                             <label for="value17"><%= value17 %></label>
                     </div>
                     <div class="col-md-1">
-                            <input id="value18" type="radio" class="form-control" name="bingo">
+                            <input id="value18" type="radio" class="form-control" name="bingo" class="not_checked">
                             <label for="value18"><%= value18 %></label>
                     </div>
                     <div class="col-md-1">
-                            <input id="value19" type="radio" class="form-control" name="bingo">
+                            <input id="value19" type="radio" class="form-control" name="bingo" class="not_checked">
                             <label for="value19"><%= value19 %></label>
                     </div>
                     <div class="col-md-1">
-                            <input id="value20" type="radio" class="form-control" name="bingo">
+                            <input id="value20" type="radio" class="form-control" name="bingo" class="not_checked">
                             <label for="value20"><%= value20 %></label>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-md-1">
-                            <input id="value21" type="radio" class="form-control" name="bingo">
+                            <input id="value21" type="radio" class="form-control" name="bingo" class="not_checked">
                             <label for="value21"><%= value21 %></label>
                     </div>
                     <div class="col-md-1">
-                            <input id="value22" type="radio" class="form-control" name="bingo">
+                            <input id="value22" type="radio" class="form-control" name="bingo" class="not_checked">
                         <label for="value22"><%= value22 %></label>
                     </div>
                     <div class="col-md-1">
-                            <input id="value23" type="radio" class="form-control" name="bingo">
+                            <input id="value23" type="radio" class="form-control" name="bingo" class="not_checked">
                         <label for="value23"><%= value23 %></label>
                     </div>
                     <div class="col-md-1">
-                            <input id="value24" type="radio" class="form-control" name="bingo">
+                            <input id="value24" type="radio" class="form-control" name="bingo" class="not_checked">
                         <label for="value24"><%= value24 %></label>
                     </div>
                     <div class="col-md-1">
-                            <input id="value25" type="radio" class="form-control" name="bingo">
+                            <input id="value25" type="radio" class="form-control" name="bingo" class="not_checked">
                         <label for="value25"><%= value25 %></label>
                     </div>
                 </div>
             </form>
 
-
-
-            <h2 id="results"></h2>
-
         </div>
+
+        <button type="submit" class="btn btn-default" id="submit">Pass value</button>
+
+        <h2 id="results"></h2>
+
     </body>
 </html>

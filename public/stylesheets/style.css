@@ -12,3 +12,14 @@ a {
     font: 36px "Lucida Grande", Helvetica, Arial, sans-serif;
 
 }
+
+.is_checked {
+    opacity: 1;
+    filter: alpha(opacity=100);
+    border: 5px solid #0DFF92;/* For IE8 and earlier */
+}
+
+.not_checked {
+    opacity: 0.40;
+    filter: alpha(opacity=40); /* For IE8 and earlier */
+}

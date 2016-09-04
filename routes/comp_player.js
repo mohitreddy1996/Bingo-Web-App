@@ -14,6 +14,11 @@ playRouter.route('/')
             value15: req.body["35"], value16: req.body["41"], value17: req.body["42"], value18: req.body["43"], value19: req.body["44"], value20: req.body["45"], value21: req.body["51"], value22: req.body["52"], value23: req.body["53"], value24: req.body["54"], value25: req.body["55"]});
     });
 
+playRouter.route('/score')
+    .get(function (req, res, next) {
+        res.send("Hello");
+    });
+
 
 
 module.exports = playRouter;

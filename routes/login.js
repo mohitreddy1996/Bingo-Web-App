@@ -22,7 +22,7 @@ loginRouter.route("/")
                             } else{
                                 var matches = dbRes[0].matches;
                                 var wins = dbRes[0].wins;
-                                res.render('main', {name : dbResults[0].userName, matches : matches, wins: wins});
+                                res.render('home', {name : dbResults[0].userName, matches : matches, wins: wins, user_id: userId});
                             }
                         });
                     }else{

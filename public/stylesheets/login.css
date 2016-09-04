@@ -24,3 +24,40 @@ body {
 
     text-align:center;
 }
+
+input[type="checkbox"],
+input[type="radio"],
+input.radio,
+input.checkbox {
+    vertical-align:text-top;
+    width:20px;
+    height:20px;
+    padding:0;
+    margin:0;
+    position:relative;
+    overflow:hidden;
+    top:2px;
+}
+
+fieldset {
+    overflow: hidden
+}
+
+.some-class {
+    float: left;
+    clear: none;
+}
+
+label {
+    float: left;
+    clear: none;
+    display: block;
+    padding: 5px 2em 0 0;
+}
+
+input[type=radio],
+input.radio {
+    float: left;
+    clear: none;
+    margin: 2px 0 0 2px;
+}

@@ -27,14 +27,21 @@ var compMatrixMap = {};
 // Comp matrix already marked matrix.
 var compMatrixDoneMap = {};
 
+// Comp value to X, Y Co Ordinates.
+var compValueCoOrdMap = {};
+
+// User value to X, Y Co Ordinates.
+var userValueCoOrdMap = {};
+
 
 playRouter.route('/')
     .post(function (req, res, next) {
-        res.render('challenge_comp');
         var Id = req.query.uid;
         if(!(Id in userMap)){
             userMap[Id] = ++userId;
         }
+        res.render('challenge_comp');
+
     });
 
 playRouter.route("/play")
@@ -45,12 +52,17 @@ playRouter.route("/play")
         // Required User steps.
         var Mat = [], compMat = [];
         var doneMat = [], compDoneMat = [];
+        userValueCoOrdMap[uId] = {};
         for(var row = 1; row<=5; row++){
             doneMat[row] = []; compDoneMat[row] = [];
             Mat[row] = []; compMat[row] = [];
             for(var col = 1; col<=5; col++){
-                doneMat[row][col] = 0;
+                doneMat[row][col] = 0; compDoneMat[row][col] = 0;
                 Mat[row][col] = req.body[(row.toString()).concat(col.toString())];
+                var userXYMap = {};
+                userXYMap["X"] = row;
+                userXYMap["Y"] = col;
+                userValueCoOrdMap[uId][Mat[row][col]] = userXYMap;
             }
         }
         userMatrixMap[uId] = Mat; compMatrixMap[uId] = compMat;
@@ -60,6 +72,7 @@ playRouter.route("/play")
         // Required Computer steps.
         var doneUserMap = {};
         doneUserMap[uId] = {};
+        compValueCoOrdMap[uId] = {};
         for(var values = 1; values<=25;){
             while(1){
                 var randInt = utils.getRandomInt(1,25);
@@ -68,6 +81,10 @@ playRouter.route("/play")
                     var r = utils.getRow(values);
                     var c = utils.getCol(values);
                     compMatrixMap[uId][r][c] = randInt;
+                    var XYMap = {};
+                    XYMap["X"] = r;
+                    XYMap["Y"] = c;
+                    compValueCoOrdMap[uId][randInt] = XYMap;
                     break;
                 }
             }
@@ -94,18 +111,52 @@ playRouter.route("/play/score")
         userMatrixDoneMap[uId][xCoOrd][yCoOrd] = 1;
 
         // mark it for comp player also.
-        
+        var XYMap = compValueCoOrdMap[uId][userValueAtCoOrds];
+        xCoOrd = XYMap["X"];
+        yCoOrd = XYMap["Y"];
+
+        compMatrixDoneMap[uId][xCoOrd][yCoOrd] =1;
 
         // check comp player bingo.
+        utils.checkBingo(compMatrixDoneMap[uId], function(ans){
+            if(ans>=5){
+                // is bingo.
+                res.send({val: -1, isBingo: true});
+            }else{
+                // not bingo.
+                // select a random number from comp matrix.
+                var r,c;
+                while(1){
+                    r = utils.getRandomInt(1,5);
+                    c = utils.getRandomInt(1,5);
+                    if(compMatrixDoneMap[uId][r][c] == 0){
+                        break;
+                    }
+                }
+                var val = compMatrixMap[uId][r][c];
+                compMatrixDoneMap[uId][r][c] = 1;
+                // check comp player bingo.
+                utils.checkBingo(compMatrixDoneMap[uId], function (isBingo) {
+                    // send required data.
+                    if(isBingo>=5){
+                        // is Bingo.
+                        res.send({val: -1, isBingo: true});
+                    } else{
+                        // Not Bingo.
+                        var xymap = userValueCoOrdMap[uId][val];
+                        var indVal = (xymap["X"]-1)*5 + xymap["Y"];
+                        res.send({val: val, isBingo: false, indVal: indVal});
+                    }
+                });
+            }
+        });
 
-        // select a random number from comp matrix.
-
-        // check comp player bingo.
-
-        // send required data.
-        res.send("Hello");
     });
 
 
+playRouter.route("/winner")
+    .get(function (req, res, pass) {
+        res.render('login');
+    });
 
 module.exports = playRouter;

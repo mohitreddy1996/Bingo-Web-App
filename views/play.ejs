@@ -10,6 +10,7 @@
         <script type="text/javascript">
             var already_checked_elements = [];
             var x,y;
+            var gameWinner;
             function disable_element(Id) {
                 //document.getElementById(Id).checked = true;
                 document.getElementById(Id).disabled = true;
@@ -23,25 +24,7 @@
                 x = (value-1)/5 + 1;
                 y = (value-1)%5 + 1;
             }
-            /*function get_checked_elements() {
-                 var flag = 1;
-                 var elems = document.getElementsByName("bingo");
-                 for(var i=0; i<elems.length; i++){
-                     if(elems[i].checked){
-                         if(already_checked_elements.indexOf(elems[i]) === -1){
-                             var Id = elems[i].id;
-                             init_X_Y(Id);
-                             disable_element(Id);
-                             already_checked_elements.add(elems[i]);
-                             flag=0;
-                         }
-                     }
-                 }
-                 if(flag === 1){
-                     check_error();
-                 }
-            }
-*/
+
             function check_error() {
                  window.alert("Not Allowed Try again!");
             }
@@ -55,19 +38,26 @@
             }
 
             function checkAndDisable(value) {
-                var elems = document.getElementsByName("bingo");
-                for(var i=0; i<elems.length; i++){
-                    var Id = elems[i].id;
-                    var textValue = $("label[for='"+Id+"']").text();
-                    if(textValue == value.toString()){
-                        elems[i].id.disabled = true;
-                    }
-                }
+                document.getElementById("value" + value.toString()).disabled = true;
+
             }
+
+            function endGame(winner) {
+                gameWinner = winner;
+                document.getElementById("finalResult").innerHTML = "Winner is : " + winner;
+                $("#redirect").show();
+                document.getElementById("redirect").style.visibility = "visible";
+            }
+
+            $(function () {
+                $("#redirect").on('click', function () {
+                    location.href = "/challenge_comp/winner?winner=" + gameWinner;
+                });
+            });
+
 
             function check_for_bingo() {
                 var ans = 0;
-                document.getElementById("output_ans").innerHTML = "Hi!";
                 // check columns.
                 var Id;
                 for(var i = 1; i <= 5; i++){
@@ -137,15 +127,22 @@
                         document.getElementById("output_ans").innerHTML = "BINGO";
                         break;
                     default:
-                        document.getElementById("output_ans").innerHTML = "Something is Wrong!!";
+                        document.getElementById("output_ans").innerHTML = "BINGO";
+                        return;
 
                 }
+
+                return ans;
             }
 
             function getUserId() {
                 var url = window.location.href;
                 return url.substring(url.indexOf("=")+1, url.length);
             }
+
+            $(document).ready(function () {
+                document.getElementById("redirect").style.visibility = "hidden";
+            });
             
             $(function(){
                 $('#submit').on('click', function () {
@@ -167,20 +164,32 @@
                     document.getElementById(id).disabled = true;
                     disable_element("submit");
                     enable_loader();
-                    check_for_bingo();
+                    var ans;
+                    ans = check_for_bingo();
+                    if(ans>=5){
+                        endGame(getUserId());
+                        return;
+                    }
                     var value = id.substring(id.indexOf("e")+1, id.length);
                     value = parseInt(value);
                     x = parseInt((value-1)/5) + 1;
                     y = (value-1)%5 + 1;
                     var parameters = {xCoOrd: x, yCoOrd: y};
                     $.get('/challenge_comp/play/score?uid=' + getUserId(), parameters, function (data) {
-                        var value = parseInt(data);
-                        checkAndDisable(value);
-                        $("#results").html("Value Selected by the Computer : " + data);
+                        if(data.val == -1){
+                            endGame("Computer");
+                            return;
+                        }
+                        checkAndDisable(data.indVal);
+                        $("#results").html("Value Selected by the Computer : " + (data.val).toString());
+                        ans = check_for_bingo();
+                        if(ans>=5){
+                            endGame(getUserId());
+                            return;
+                        }
+                        disable_loader();
+                        enable_element("submit");
                     });
-                    check_for_bingo();
-                    disable_loader();
-                    enable_element("submit");
                 });
             });
 
@@ -194,7 +203,7 @@
             <img id="loading-image" src="images/loader.gif" alt="Loading..." />
         </div>
 
-        <h3 id="output_ans"></h3>
+        <h3 id="output_ans" style="margin-left: 30px"></h3>
 
         <div class="container">
             <form>
@@ -318,7 +327,11 @@
 
         <button type="submit" class="btn btn-default" id="submit">Pass value</button>
 
-        <h2 id="results"></h2>
+        <h4 id="results"></h4>
+
+        <h2 id="finalResult"></h2>
+
+        <input id="redirect" type="button" class="form-control">
 
     </body>
 </html>

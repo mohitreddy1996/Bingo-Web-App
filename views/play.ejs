@@ -51,7 +51,7 @@
 
             $(function () {
                 $("#redirect").on('click', function () {
-                    location.href = "/challenge_comp/winner?winner=" + gameWinner;
+                    location.href = "/challenge_comp/winner?winner=" + gameWinner + "&uid=" + getUserId();
                 });
             });
 
@@ -331,7 +331,7 @@
 
         <h2 id="finalResult"></h2>
 
-        <input id="redirect" type="button" class="form-control">
+        <button id="redirect" type="button" class="form-control">Go back!</button>
 
     </body>
 </html>

@@ -156,7 +156,8 @@ playRouter.route("/play/score")
 
 playRouter.route("/winner")
     .get(function (req, res, pass) {
-        res.render('login');
+        // Update The Winner and user stats.
+        res.redirect('/login?uid=' + req.query.uid);
     });
 
 module.exports = playRouter;

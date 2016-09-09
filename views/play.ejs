@@ -14,13 +14,16 @@
                 //document.getElementById(Id).checked = true;
                 document.getElementById(Id).disabled = true;
             }
+            function enable_element(Id) {
+                document.getElementById(Id).disabled = false;
+            }
             function init_X_Y(Id) {
                 var value = Id.substring(Id.indexOf("e")+1, Id.length);
                 value = parseInt(value);
                 x = (value-1)/5 + 1;
                 y = (value-1)%5 + 1;
             }
-            function get_checked_elements() {
+            /*function get_checked_elements() {
                  var flag = 1;
                  var elems = document.getElementsByName("bingo");
                  for(var i=0; i<elems.length; i++){
@@ -38,11 +41,112 @@
                      check_error();
                  }
             }
-
+*/
             function check_error() {
                  window.alert("Not Allowed Try again!");
             }
 
+            function enable_loader() {
+                $("#loading").removeClass('hide');
+            }
+
+            function disable_loader(){
+                $("#loading").addClass('hide');
+            }
+
+            function checkAndDisable(value) {
+                var elems = document.getElementsByName("bingo");
+                for(var i=0; i<elems.length; i++){
+                    var Id = elems[i].id;
+                    var textValue = $("label[for='"+Id+"']").text();
+                    if(textValue == value.toString()){
+                        elems[i].id.disabled = true;
+                    }
+                }
+            }
+
+            function check_for_bingo() {
+                var ans = 0;
+                document.getElementById("output_ans").innerHTML = "Hi!";
+                // check columns.
+                var Id;
+                for(var i = 1; i <= 5; i++){
+                    var flag = 1;
+                    for(var j=0; j<5; j++){
+                        Id = "value".concat((i + 5*j).toString());
+                        if(document.getElementById(Id).disabled == false){
+                            flag = 0;
+                        }
+                    }
+                    if(flag == 1){
+                        ans++;
+                    }
+                }
+
+                // check rows.
+                for(var col = 0; col<5; col++){
+                    var flag1 = 1;
+                    for(var row = 1; row<=5; row++){
+                        Id = "value".concat((row + col*5).toString());
+                        if(document.getElementById(Id).disabled == false){
+                            flag1 = 0;
+                        }
+                    }
+                    if(flag1 == 1){
+                        ans++;
+                    }
+                }
+
+                // check diagonals1.
+                var flag3 = 1, flag4 = 1
+                for(var xdiag = 1, ydiag=0; xdiag<=5; xdiag++, ydiag++){
+                    Id = "value".concat((xdiag + ydiag*5).toString());
+                    if(document.getElementById(Id).disabled == false){
+                        flag3 = 0;
+                    }
+                    Id = "value".concat((ydiag*5 + (5 - xdiag + 1)).toString());
+                    if(document.getElementById(Id).disabled == false){
+                        flag4 = 0;
+                    }
+                }
+
+                if(flag3 == 1){
+                    ans++;
+                }
+                if(flag4 == 1){
+                    ans++;
+                }
+
+                switch (ans) {
+                    case 0:
+                        document.getElementById("output_ans").innerHTML = "";
+                        break;
+                    case 1:
+                        document.getElementById("output_ans").innerHTML = "B";
+                        break;
+                    case 2:
+                        document.getElementById("output_ans").innerHTML = "BI";
+                        break;
+                    case 3:
+                        document.getElementById("output_ans").innerHTML = "BIN";
+                        break;
+                    case 4:
+                        document.getElementById("output_ans").innerHTML = "BING";
+                        break;
+                    case 5:
+                        document.getElementById("output_ans").innerHTML = "BINGO";
+                        break;
+                    default:
+                        document.getElementById("output_ans").innerHTML = "Something is Wrong!!";
+
+                }
+            }
+
+            function getUserId() {
+                var url = window.location.href;
+                return url.substring(url.indexOf("=")+1, url.length);
+            }
+            
             $(function(){
                 $('#submit').on('click', function () {
                     //get_checked_elements();
@@ -61,16 +165,22 @@
                         return;
                     }
                     document.getElementById(id).disabled = true;
-                    document.getElementById(id).style.outline = "red";
-                    document.getElementById(id).className = "is_checked";
+                    disable_element("submit");
+                    enable_loader();
+                    check_for_bingo();
                     var value = id.substring(id.indexOf("e")+1, id.length);
                     value = parseInt(value);
                     x = parseInt((value-1)/5) + 1;
                     y = (value-1)%5 + 1;
                     var parameters = {xCoOrd: x, yCoOrd: y};
-                    $.get('/play/score/', parameters, function (data) {
-                        $('#results').html(data);
+                    $.get('/challenge_comp/play/score?uid=' + getUserId(), parameters, function (data) {
+                        var value = parseInt(data);
+                        checkAndDisable(value);
+                        $("#results").html("Value Selected by the Computer : " + data);
                     });
+                    check_for_bingo();
+                    disable_loader();
+                    enable_element("submit");
                 });
             });
 
@@ -80,6 +190,11 @@
     <body>
         <h2>Game Play!</h2>
         <p>- May have to use ajax, responsive html.</p>
+        <div id="loading" class="hide">
+            <img id="loading-image" src="images/loader.gif" alt="Loading..." />
+        </div>
+
+        <h3 id="output_ans"></h3>
 
         <div class="container">
             <form>

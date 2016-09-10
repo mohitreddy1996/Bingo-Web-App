@@ -51,4 +51,22 @@ mongo_helper.getUserScore = function(dbName, collName, userId, callback) {
 
 };
 
+mongo_helper.addWinner = function (dbName, collName, userId, winner, callback) {
+    var queryObj = {};
+    queryObj._id = userId;
+    var updateObj = {};
+    if(winner === cons.Winner.COMPUTER){
+        updateObj["$inc"] = {
+            matches : 1
+        };
+    }else{
+        updateObj["$inc"] = {
+            matches : 1,
+            wins : 1
+        };
+    }
+
+    mongoClient.updateInDB(dbName, collName, queryObj, updateObj, true, callback);
+};
+
 module.exports = mongo_helper;

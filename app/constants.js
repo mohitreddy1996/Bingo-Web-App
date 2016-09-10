@@ -14,4 +14,7 @@ cons.PORT = 27017;
 cons.host = "localhost";
 cons.auth = false;
 
+cons.Winner = {};
+cons.Winner.COMPUTER = "Computer";
+
 module.exports = cons;

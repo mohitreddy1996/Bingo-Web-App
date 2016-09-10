@@ -7,8 +7,8 @@ var loginRouter = express.Router();
 
 loginRouter.route("/")
     .post(function (req, res, next) {
-        var userId = req.query.userId;
-        var password = req.query.password;
+        var userId = req.body.userId;
+        var password = req.body.password;
 
         mongoHelper.findUser(props.BINGO_USER, props.USERS, userId, function (err, dbResults) {
             if(err){

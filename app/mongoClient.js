@@ -40,7 +40,7 @@ mongo_client.insertInDB = function(dbName, collName, dbObj, cb){
 mongo_client.updateInDB = function(dbName, collName, query, updateObj, upsert, cb){
     mongo_client.getDB(function(db){
         var coll = db.collection(collName);
-        coll.update(query, update, {upsert : upsert, w:1}, cb);
+        coll.update(query, updateObj, {upsert : upsert, w:1}, cb);
     }, dbName);
 };
 

@@ -157,7 +157,14 @@ playRouter.route("/play/score")
 playRouter.route("/winner")
     .get(function (req, res, pass) {
         // Update The Winner and user stats.
-        res.redirect('/login?uid=' + req.query.uid);
+        var winner = req.query.winner;
+        mongoHelper.addWinner(props.BINGO_USER, props.SCORE, req.query.uid, winner, function (err, dbResults) {
+            if(err){
+                res.status(500).json("Error while updating database.");
+            }else{
+                res.redirect('/home?uid=' + req.query.uid);
+            }
+        });
     });
 
 module.exports = playRouter;

@@ -38,9 +38,10 @@
             document.getElementById("header_opp").innerHTML = "Your Opponent " + oppId;
         }
 
-        function endBingo() {
+        function endBingo(winner) {
             gameWinner = winner;
             document.getElementById("finalResult").innerHTML = "Winner is : " + winner;
+            disableDOM("submit");
             $("#redirect").show();
             document.getElementById("redirect").style.visibility = "visible";
         }
@@ -137,7 +138,7 @@
                 // check for isBingo, isMyTurn, value selected by opponent, winner.
                 if(data.isBingo){
                     gameWinner = data.winner;
-                    endBingo();
+                    endBingo(gameWinner);
                 }
                 else if(data.isMyTurn){
                     if(data.oppLastVal != -1)
@@ -205,6 +206,16 @@
                 $.get('/challenge_user/data?uid=' + getUserId(), parameters, function (data) {
                     fetch_chances();
                 });
+            });
+
+            $("#redirect").on('click', function () {
+                var params = {};
+                params.uid = getUserId();
+                params.oppId = oppId;
+                params.winner = gameWinner;
+                $.get('/challenge_user/winner', params, function (data) {
+
+                }) ;
             });
         });
 

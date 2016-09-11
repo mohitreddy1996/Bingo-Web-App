@@ -34,6 +34,8 @@ var userChance = {};
 
 var userLastMove = {};
 
+var userToUserWinner = {};
+
 
 challenge_user_router.route('/')
     .post(function (req, res, next) {
@@ -112,6 +114,10 @@ challenge_user_router.route("/search")
             userChance[userMap[oppId]] = 0;
             userLastMove[userMap[Id]] = -1;
             userLastMove[userMap[oppId]] = -1;
+            userToUserWinner[userMap[Id]] = {};
+            userToUserWinner[userMap[Id]][userMap[oppId]] = -1;
+            userToUserWinner[userMap[oppId]] = {};
+            userToUserWinner[userMap[oppId]][userMap[Id]] = -1;
             myCache.del(oppId);
             myCache.del(Id);
             resObj.oppFound = true;
@@ -130,13 +136,25 @@ challenge_user_router.route("/chance")
         utils.checkBingo(userDoneMatrixMap[userMap[req.query.uid]], function (isBingo) {
             if(isBingo>=5){
                 resObj.isBingo = true;
-                resObj.winner = req.query.uid;
+                if(userToUserWinner[userMap[req.query.uid]][userToUserMap[userMap[req.query.uid]]] == -1) {
+                    resObj.winner = req.query.uid;
+                    userToUserWinner[userMap[req.query.uid]][userToUserMap[userMap[req.query.uid]]] = resObj.winner;
+                    userToUserWinner[userToUserMap[userMap[req.query.uid]]][userMap[req.query.uid]] = resObj.winner;
+                }else{
+                    resObj.winner = userToUserWinner[userMap[req.query.uid]][userToUserMap[userMap[req.query.uid]]];
+                }
                 res.send(resObj);
             } else{
                 utils.checkBingo(userDoneMatrixMap[userToUserMap[userMap[req.query.uid]]], function (isBingo2) {
                     if(isBingo2>=5){
                         resObj.isBingo = true;
-                        resObj.winner = userRevMap[userToUserMap[req.query.uid]];
+                        if(userToUserWinner[userMap[req.query.uid]][userToUserMap[userMap[req.query.uid]]] == -1) {
+                            resObj.winner = userRevMap[userToUserMap[req.query.uid]];
+                            userToUserWinner[userMap[req.query.uid]][userToUserMap[userMap[req.query.uid]]] = resObj.winner;
+                            userToUserWinner[userToUserMap[userMap[req.query.uid]]][userMap[req.query.uid]] = resObj.winner;
+                        }else{
+                            resObj.winner = userToUserWinner[userMap[req.query.uid]][userToUserMap[userMap[req.query.uid]]];
+                        }
                         res.send(resObj);
                     }else {
                         res.send(resObj);
@@ -162,6 +180,23 @@ challenge_user_router.route("/data")
         userChance[userMap[Id]] = 0;
         userChance[userToUserMap[userMap[Id]]] = 1;
         res.send("Hello");
+    });
+
+challenge_user_router.route('/winner')
+    .get(function (req, res, next) {
+        var userId = req.query.uid;
+        var oppId = req.query.oppId;
+        var winner = req.query.winner;
+
+        if(userId == winner){
+            mongoHelper.addWinner(props.BINGO_USER, props.SCORE, userId, winner, function (err, dbResults) {
+                if(err){
+                    res.status(500).json("Error while updating the database!");
+                }else{
+                    res.redirect('/home?uid='+userId);
+                }
+            });
+        }
     });
 
 module.exports = challenge_user_router;

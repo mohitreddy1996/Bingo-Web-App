@@ -55,7 +55,7 @@ mongo_helper.addWinner = function (dbName, collName, userId, winner, callback) {
     var queryObj = {};
     queryObj._id = userId;
     var updateObj = {};
-    if(winner === cons.Winner.COMPUTER){
+    if(winner != userId){
         updateObj["$inc"] = {
             matches : 1
         };

@@ -1,0 +1,354 @@
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="stylesheets/style.css">
+    <link rel="stylesheet" type="text/css" href="stylesheets/login.css">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
+
+        var intervalId;
+        var oppId = -1;
+        var gameWinner;
+
+        function getUserId(){
+            var url = window.location.href;
+            return url.substring(url.indexOf("=")+1, url.length);
+        }
+
+        function enableLoader() {
+            $("#loading").removeClass('hide');
+        }
+
+        function disableLoader(){
+            $("#loading").addClass('hide');
+        }
+
+        function enableDOM(Id) {
+            document.getElementById(Id).disabled = false;
+        }
+
+        function disableDOM(Id) {
+            document.getElementById(Id).disabled = true;
+        }
+
+        function changeHeaderOpp(oppId) {
+            document.getElementById("header_opp").innerHTML = "Your Opponent " + oppId;
+        }
+
+        function endBingo() {
+            gameWinner = winner;
+            document.getElementById("finalResult").innerHTML = "Winner is : " + winner;
+            $("#redirect").show();
+            document.getElementById("redirect").style.visibility = "visible";
+        }
+
+
+
+        function check_error() {
+            window.alert("Not Allowed Try again!");
+        }
+
+        function displayBingo() {
+            var ans = 0;
+            var Id;
+            for(var i = 1; i <= 5; i++){
+                var flag = 1;
+                for(var j=0; j<5; j++){
+                    Id = "value".concat((i + 5*j).toString());
+                    if(document.getElementById(Id).disabled == false){
+                        flag = 0;
+                    }
+                }
+                if(flag == 1){
+                    ans++;
+                }
+            }
+
+            // check rows.
+            for(var col = 0; col<5; col++){
+                var flag1 = 1;
+                for(var row = 1; row<=5; row++){
+                    Id = "value".concat((row + col*5).toString());
+                    if(document.getElementById(Id).disabled == false){
+                        flag1 = 0;
+                    }
+                }
+                if(flag1 == 1){
+                    ans++;
+                }
+            }
+
+            // check diagonals1.
+            var flag3 = 1, flag4 = 1
+            for(var xdiag = 1, ydiag=0; xdiag<=5; xdiag++, ydiag++){
+                Id = "value".concat((xdiag + ydiag*5).toString());
+                if(document.getElementById(Id).disabled == false){
+                    flag3 = 0;
+                }
+                Id = "value".concat((ydiag*5 + (5 - xdiag + 1)).toString());
+                if(document.getElementById(Id).disabled == false){
+                    flag4 = 0;
+                }
+            }
+
+            if(flag3 == 1){
+                ans++;
+            }
+            if(flag4 == 1){
+                ans++;
+            }
+
+            switch (ans) {
+                case 0:
+                    document.getElementById("output_ans").innerHTML = "";
+                    break;
+                case 1:
+                    document.getElementById("output_ans").innerHTML = "B";
+                    break;
+                case 2:
+                    document.getElementById("output_ans").innerHTML = "BI";
+                    break;
+                case 3:
+                    document.getElementById("output_ans").innerHTML = "BIN";
+                    break;
+                case 4:
+                    document.getElementById("output_ans").innerHTML = "BING";
+                    break;
+                case 5:
+                    document.getElementById("output_ans").innerHTML = "BINGO";
+                    break;
+                default:
+                    document.getElementById("output_ans").innerHTML = "BINGO";
+            }
+        }
+
+        function updateBingo(value) {
+            document.getElementById("value" + value.toString()).disabled = true;
+            displayBingo();
+        }
+
+        function fetch_chances() {
+            var params = {};
+            params.oppId = oppId;
+            $.get('/challenge_user/chance?uid=' + getUserId(), params, function (data) {
+                // check for isBingo, isMyTurn, value selected by opponent, winner.
+                if(data.isBingo){
+                    gameWinner = data.winner;
+                    endBingo();
+                }
+                else if(data.isMyTurn){
+                    if(data.oppLastVal != -1)
+                        updateBingo(data.oppLastVal);
+                    disableLoader();
+                    enableDOM("submit");
+                }else {
+                    // if opponents chance.
+                    if(data.oppLastVal != -1)
+                        updateBingo(data.oppLastVal);
+                    setTimeout(fetch_chances, 5000);
+                }
+            });
+
+        }
+
+        $(document).ready(function () {
+            document.getElementById("redirect").style.visibility = "hidden";
+            document.getElementById("submit").disabled = true;
+            intervalId = setInterval(function () {
+                var params = {};
+                $.get('/challenge_user/search?uid=' + getUserId(), params, function(data){
+                    if(data.oppFound == true){
+                        // Output opposition name. abort setInterval. call function.
+                        oppId = data.oppId;
+                        changeHeaderOpp(data.oppId);
+                        enableLoader();
+                        fetch_chances();
+                        clearTimeout(intervalId);
+                    }
+                });
+            }, 2000);
+
+        });
+        
+        $(function () {
+            $("#submit").on('click', function () {
+                // find X and Y coordinates.
+                var id;
+                var flag = 0;
+                var elems = document.getElementsByName("bingo");
+                for(var i=0; i<elems.length; i++){
+                    if(elems[i].checked && elems[i].disabled == false){
+                        id = elems[i].id;
+                        flag=1
+                        break;
+                    }
+                }
+                // check for error.
+                if(flag === 0){
+                    check_error();
+                    return;
+                }
+                document.getElementById(id).disabled = true;
+                // disable submit button.
+                disableDOM("submit");
+                enableLoader();
+                displayBingo();
+                var value = id.substring(id.indexOf("e")+1, id.length);
+                value = parseInt(value);
+                x = parseInt((value-1)/5) + 1;
+                y = (value-1)%5 + 1;
+                var parameters = {Xcoord: x, Ycoord: y};
+                // send to server.
+                $.get('/challenge_user/data?uid=' + getUserId(), parameters, function (data) {
+                    fetch_chances();
+                });
+            });
+        });
+
+    </script>
+</head>
+
+<body>
+<h2>Game Play!</h2>
+<p>- May have to use ajax, responsive html.</p>
+<div id="loading">
+    <img id="loading-image" src="images/loader.gif" alt="Loading..." />
+</div>
+
+<h4 id="header_opp"> Searching For Opponent!!</h4>
+
+<h3 id="output_ans" style="margin-left: 30px"></h3>
+
+<div class="container">
+    <form>
+        <div class="row">
+            <div class="col-md-1">
+                <input id="value1" type="radio" class="form-control" name="bingo" class="not_checked">
+                <label for="value1"><%= value1 %></label>
+            </div>
+            <div class="col-md-1">
+                <input id="value2" type="radio" class="form-control" name="bingo" class="not_checked">
+                <label for="value2"><%= value2 %></label>
+            </div>
+            <div class="col-md-1">
+                <input id="value3" type="radio" class="form-control" name="bingo" class="not_checked">
+                <label for="value3"><%= value3 %></label>
+            </div>
+            <div class="col-md-1">
+                <input id="value4" type="radio" class="form-control" name="bingo" class="not_checked">
+                <label for="value4"><%= value4 %></label>
+            </div>
+            <div class="col-md-1">
+                <input id="value5" type="radio" class="form-control" name="bingo" class="not_checked">
+                <label for="value5"><%= value5 %></label>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-1">
+                <input id="value6" type="radio" class="form-control" name="bingo" class="not_checked">
+                <label for="value6"><%= value6 %></label>
+            </div>
+            <div class="col-md-1">
+                <input id="value7" type="radio" class="form-control" name="bingo" class="not_checked">
+                <label for="value7"><%= value7 %></label>
+            </div>
+            <div class="col-md-1">
+                <input id="value8" type="radio" class="form-control" name="bingo" class="not_checked">
+                <label for="value8"><%= value8 %></label>
+            </div>
+            <div class="col-md-1">
+                <input id="value9" type="radio" class="form-control" name="bingo" class="not_checked">
+                <label for="value9"><%= value9 %></label>
+            </div>
+            <div class="col-md-1">
+                <input id="value10" type="radio" class="form-control" name="bingo" class="not_checked">
+                <label for="value10"><%= value10 %></label>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-1">
+                <input id="value11" type="radio" class="form-control" name="bingo" class="not_checked">
+                <label for="value11"><%= value11 %></label>
+            </div>
+            <div class="col-md-1">
+                <input id="value12" type="radio" class="form-control" name="bingo" class="not_checked">
+                <label for="value12"><%= value12 %></label>
+            </div>
+            <div class="col-md-1">
+                <input id="value13" type="radio" class="form-control" name="bingo" class="not_checked">
+                <label for="value13"><%= value13 %></label>
+            </div>
+            <div class="col-md-1">
+                <input id="value14" type="radio" class="form-control" name="bingo" class="not_checked">
+                <label for="value14"><%= value14 %></label>
+            </div>
+            <div class="col-md-1">
+                <input id="value15" type="radio" class="form-control" name="bingo" class="not_checked">
+                <label for="value15"><%= value15 %></label>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-1">
+                <input id="value16" type="radio" class="form-control" name="bingo" class="not_checked">
+                <label for="value16"><%= value16 %></label>
+            </div>
+            <div class="col-md-1">
+                <input id="value17" type="radio" class="form-control" name="bingo" class="not_checked" >
+                <label for="value17"><%= value17 %></label>
+            </div>
+            <div class="col-md-1">
+                <input id="value18" type="radio" class="form-control" name="bingo" class="not_checked">
+                <label for="value18"><%= value18 %></label>
+            </div>
+            <div class="col-md-1">
+                <input id="value19" type="radio" class="form-control" name="bingo" class="not_checked">
+                <label for="value19"><%= value19 %></label>
+            </div>
+            <div class="col-md-1">
+                <input id="value20" type="radio" class="form-control" name="bingo" class="not_checked">
+                <label for="value20"><%= value20 %></label>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-1">
+                <input id="value21" type="radio" class="form-control" name="bingo" class="not_checked">
+                <label for="value21"><%= value21 %></label>
+            </div>
+            <div class="col-md-1">
+                <input id="value22" type="radio" class="form-control" name="bingo" class="not_checked">
+                <label for="value22"><%= value22 %></label>
+            </div>
+            <div class="col-md-1">
+                <input id="value23" type="radio" class="form-control" name="bingo" class="not_checked">
+                <label for="value23"><%= value23 %></label>
+            </div>
+            <div class="col-md-1">
+                <input id="value24" type="radio" class="form-control" name="bingo" class="not_checked">
+                <label for="value24"><%= value24 %></label>
+            </div>
+            <div class="col-md-1">
+                <input id="value25" type="radio" class="form-control" name="bingo" class="not_checked">
+                <label for="value25"><%= value25 %></label>
+            </div>
+        </div>
+    </form>
+
+</div>
+
+<button type="submit" class="btn btn-default" id="submit">Pass value</button>
+
+<h4 id="results"></h4>
+
+<h2 id="finalResult"></h2>
+
+<button id="redirect" type="button" class="form-control">Go back!</button>
+
+</body>
+</html>

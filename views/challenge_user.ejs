@@ -5,11 +5,170 @@
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <script src="/js/jquery.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
+        function getUserId() {
+            var url = window.location.href;
+            return url.substring(url.indexOf("=")+1, url.length);
+        }
+        function playUrl(form) {
+            form.action = "/challenge_user/play?uid=" + getUserId();
+        }
+    </script>
 </head>
 
 <body>
 <h3>
-    User v/s User.
+    User v/s Computer.
 </h3>
+
+<div class="container">
+    <form onsubmit="playUrl(this);" method="post">
+        <div class="row">
+            <div class="col-md-1">
+                <div class="form-group">
+                    <input id="11" type="text" class="form-control" name="11" placeholder="1">
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <input id="12" type="text" class="form-control" name="12" placeholder="2">
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <input id="13" type="text" class="form-control" name="13" placeholder="3">
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <input id="14" type="text" class="form-control" name="14" placeholder="4">
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <input id="15" type="text" class="form-control" name="15" placeholder="5">
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-1">
+                <div class="form-group">
+                    <input id="21" type="text" class="form-control" name="21" placeholder="6">
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <input id="22" type="text" class="form-control" name="22" placeholder="7">
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <input id="23" type="text" class="form-control" name="23" placeholder="8">
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <input id="24" type="text" class="form-control" name="24" placeholder="9">
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <input id="25" type="text" class="form-control" name="25" placeholder="10">
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-1">
+                <div class="form-group">
+                    <input id="31" type="text" class="form-control" name="31" placeholder="11">
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <input id="32" type="text" class="form-control" name="32" placeholder="12">
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <input id="33" type="text" class="form-control" name="33" placeholder="13">
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <input id="34" type="text" class="form-control" name="34" placeholder="14">
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <input id="35" type="text" class="form-control" name="35" placeholder="15">
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-1">
+                <div class="form-group">
+                    <input id="41" type="text" class="form-control" name="41" placeholder="16">
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <input id="42" type="text" class="form-control" name="42" placeholder="17">
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <input id="43" type="text" class="form-control" name="43" placeholder="18">
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <input id="44" type="text" class="form-control" name="44" placeholder="19">
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <input id="45" type="text" class="form-control" name="45" placeholder="20">
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-1">
+                <div class="form-group">
+                    <input id="51" type="text" class="form-control" name="51" placeholder="21">
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <input id="52" type="text" class="form-control" name="52" placeholder="22">
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <input id="53" type="text" class="form-control" name="53" placeholder="23">
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <input id="54" type="text" class="form-control" name="54" placeholder="24">
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <input id="55" type="text" class="form-control" name="55" placeholder="25">
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6" align="right">
+            <button type="submit" class="btn btn-default" id="submit">Confirm, Lets play!</button>
+        </div>
+    </form>
+</div>
+
 </body>
 </html>

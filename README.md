@@ -1,10 +1,14 @@
 # Bingo-Web-App
-A Web application made using Node.js, ExpressJs, JQuery, AJAX. 
-It is a multi-client Bingo game. Multiple users can play with a bot(implemented on the server side) or they can play with each other.
+Multi-Player Bingo Web Application in which user can play against each other or with a bot (Server controlled).
 
-Key Features:
-1) Multi-Player Game.
-2) Lock synchronisations handled.
-3) Data of a player saved and updated after each match.
-4) Server side Bot to allow players to play with bot.
-5) Bot follows greedy algorithm.
+## Features Implemented/To be Implemented.
+* ~~Multi Client-Server Architecture.~~
+* ~~Lock synchronisations handled.~~
+* ~~Data of a player saved and updated after each match. Data of the user Saved in MongoDB~~
+* ~~Server side Bot to allow players to play with bot.~~
+* ~~Bot follows greedy algorithm.~~
+* Server side Bot can be trained? (AI/Deep Learning).
+
+## Example
+* node bin/www.js
+* Open localhost:3000 in browser.
